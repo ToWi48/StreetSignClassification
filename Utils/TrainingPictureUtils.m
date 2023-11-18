@@ -1,11 +1,11 @@
 classdef TrainingPictureUtils
     methods(Static)
         function ret = getPictures(path)
-            ret = [];
+            %ret = [];
             imagefiles = dir(strjoin([path '*.png'], "/"));      
             for i=1:length(imagefiles)
                 currentfilename = imagefiles(i).name;
-                ret{i} = TrainingScene(currentfilename);
+                ret(i) = TrainingScene(currentfilename);
             end
 
             if length(imagefiles) <= 0
