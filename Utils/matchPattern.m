@@ -1,44 +1,31 @@
-function probability = matchPattern(x_curve, y_curve, peaks_x, peaks_y)
-    %% prepare
-    peaks_x = sortrows(peaks_x, 1);
-    peaks_y = sortrows(peaks_y, 1);
+function probability = matchPattern(orig_image, ref_image)
+    % synch size
+    ref_image = imresize(ref_image, size(orig_image));
 
-    %% y - axis
-    n_peaks_y = height(peaks_y);
-    [values, locations] = findpeaks(y_curve, "NPeaks", n_peaks_y);
-    locations_norm = locations ./ length(y_curve);
+    %% main
+    x_axis_orig         = sum(orig_image, 1);
+    y_axis_orig         = sum(orig_image, 2);
+    x_axis_ref          = sum(ref_image, 1);
+    y_axis_ref          = sum(ref_image, 2);
+
+    x_axis_orig_norm    = x_axis_orig / max(x_axis_orig);
+    y_axis_orig_norm    = y_axis_orig / max(y_axis_orig);
+    x_axis_ref_norm     = x_axis_ref / max(x_axis_ref);
+    y_axis_ref_norm     = y_axis_ref / max(y_axis_ref);
     
-    probability_y = 0;
-    for i_peak = 1:n_peaks_y
-        if i_peak > length(values)
-            return
-        end
+    % plot
+    % figure
+    % subplot(1, 4, 1); imshow(not(orig_image));
+    % subplot(1, 4, 2); barh(1:length(y_axis_orig_norm), y_axis_orig_norm); set(gca, 'YDir','reverse');
+    % subplot(1, 4, 3); plot(y_axis_orig_norm(end:-1:1), 1:-1/length(y_axis_orig_norm):1/length(y_axis_orig_norm)); set(gca, 'YDir','reverse');
+    % subplot(1, 4, 4); plot(1/length(y_axis_orig_norm):1/length(x_axis_orig_norm):1, x_axis_orig_norm);
 
-        diff_location   = abs(peaks_y(i_peak, 1) - locations_norm(i_peak));
-        diff_value      = abs(peaks_y(i_peak, 2) - values(i_peak));
+    % process 
+    diff_x = abs(x_axis_ref_norm - x_axis_orig_norm);
+    diff_y = abs(y_axis_ref_norm - y_axis_orig_norm);
 
-        probability_y = probability_y + (1-diff_location) + (1-diff_value);
-    end
-    probability_y = 1/(2*n_peaks_y) .* probability_y;
-
-    %% x - axis
-    n_peaks_x = height(peaks_x);
-    [values, locations] = findpeaks(x_curve, "NPeaks", n_peaks_x);
-    locations_norm = locations ./ length(x_curve);
+    diff = 0.5 * (mean(diff_x) + mean(diff_y));
     
-    probability_x = 0;
-    for i_peak = 1:n_peaks_x
-        if i_peak > length(values)
-            return
-        end
-
-        diff_location   = abs(peaks_x(i_peak, 1) - locations_norm(i_peak));
-        diff_value      = abs(peaks_x(i_peak, 2) - values(i_peak));
-
-        probability_x = probability_x + (1-diff_location) + (1-diff_value);
-    end
-    probability_x = 1/(2*n_peaks_x) .* probability_x;
-
-    %% result
-    probability = 1/2 * (probability_x + probability_y);
+    % result
+    probability = 1 - diff;
 end

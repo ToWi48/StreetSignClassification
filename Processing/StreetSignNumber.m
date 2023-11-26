@@ -11,30 +11,45 @@ function [number, probability] = StreetSignNumber(bw_image)
     load("Templates\TEMPLATE_8.mat");
     load("Templates\TEMPLATE_9.mat");
 
-    % peak      = [location, value]
-    peaks_x_3   = [[0.23, 0.38]; [0.87, 1]];
-    peaks_y_3   = [[0.9, 1]; [0.5, 0.5]; [0.1, 0.75]];
-
-    %% Debug
-    % bw_image = imbinarize(imread("DebugImages\CenterPixelBw.png"));
-    % bw_image = bw_image(:,:,1);
-
-    bw_image = TEMPLATE_8;
-
     %% main
-    x_axis = sum(bw_image, 1);
-    x_axis_norm = x_axis / max(x_axis);
-    y_axis = sum(bw_image, 2);
-    y_axis_norm = y_axis / max(y_axis);
+    % first check - envelope curve
+    probability         = [];
+    probabilitys(1)     = matchPattern(bw_image, TEMPLATE_1);
+    probabilitys(2)     = matchPattern(bw_image, TEMPLATE_2);
+    probabilitys(3)     = matchPattern(bw_image, TEMPLATE_3);
+    probabilitys(4)     = matchPattern(bw_image, TEMPLATE_4);
+    probabilitys(5)     = matchPattern(bw_image, TEMPLATE_5);
+    probabilitys(6)     = matchPattern(bw_image, TEMPLATE_6);
+    probabilitys(7)     = matchPattern(bw_image, TEMPLATE_7);
+    probabilitys(8)     = matchPattern(bw_image, TEMPLATE_8);
+    probabilitys(9)     = matchPattern(bw_image, TEMPLATE_9);
+    probabilitys(10)    = matchPattern(bw_image, TEMPLATE_0);
+
+    tries               = table((1:length(probabilitys))', probabilitys', 'VariableNames', {'id', 'probability'});
+    tries               = sortrows(tries, "probability");
+
+    idx                 = height(tries);
     
-    figure
-    subplot(1, 4, 1); imshow(not(bw_image));
-    subplot(1, 4, 2); barh(1:length(y_axis_norm), y_axis_norm); set(gca, 'YDir','reverse');
-    subplot(1, 4, 3); plot(y_axis_norm(end:-1:1), 1:-1/length(y_axis_norm):1/length(y_axis_norm)); set(gca, 'YDir','reverse');
-    subplot(1, 4, 4); plot(1/length(y_axis_norm):1/length(x_axis_norm):1, x_axis_norm);
+    % second check - number of holes
+    NUM_HOLES_IN_NUMBERS = [0, 0, 0, 0, 0, 1, 0, 2, 1, 1];
 
-    probability = matchPattern(x_axis_norm, y_axis_norm, peaks_x_3, peaks_y_3);
+    hole_image = imclearborder(not(bw_image));
+    [~, numHoles] = bwlabel(hole_image);
 
-    number = 1;
-    probability = 0;
+    % result
+    for i_tries = height(tries):-1:1
+        i = tries(idx, :).id;
+        if NUM_HOLES_IN_NUMBERS(i) == numHoles
+            break
+        end
+        idx = idx - 1;
+    end
+    
+    number = tries(idx, :).id
+    probability = probabilitys(number);
+
+    if number == 10
+        number = 0;
+    end
+    number      = number;
 end
