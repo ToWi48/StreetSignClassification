@@ -13,7 +13,7 @@ function [number, probability] = StreetSignNumber(bw_image)
 
     %% main
     % first check - envelope curve
-    probability         = [];
+    probabilitys        = [];
     probabilitys(1)     = matchPattern(bw_image, TEMPLATE_1);
     probabilitys(2)     = matchPattern(bw_image, TEMPLATE_2);
     probabilitys(3)     = matchPattern(bw_image, TEMPLATE_3);
@@ -45,11 +45,10 @@ function [number, probability] = StreetSignNumber(bw_image)
         idx = idx - 1;
     end
     
-    number = tries(idx, :).id
+    number = tries(idx, :).id;
     probability = probabilitys(number);
 
     if number == 10
         number = 0;
     end
-    number      = number;
 end
