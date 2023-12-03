@@ -7,6 +7,7 @@ classdef TrainingScene
         background
         weather
         id
+        isValid
     end
     methods
         function td = TrainingScene(path)
@@ -20,9 +21,15 @@ classdef TrainingScene
             td.background   = extractedName{4};
             td.weather      = extractedName{5};
             td.id           = extractedName{6};
+            td.isValid      = true;
+
+            if length(extractedName) > 6
+                td.isValid  = false;
+            end
         end
 
         function td = load(td)
+            disp(strjoin(["load source" td.path "..."]));
             [indexedImage, cmap] = imread(td.path);
 
             if length(cmap) > 1

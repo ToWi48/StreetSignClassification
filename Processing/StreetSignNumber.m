@@ -26,9 +26,9 @@ function [number, probability] = StreetSignNumber(bw_image)
     probabilitys(10)    = matchPattern(bw_image, TEMPLATE_0);
 
     tries               = table((1:length(probabilitys))', probabilitys', 'VariableNames', {'id', 'probability'});
-    tries               = sortrows(tries, "probability");
+    tries               = sortrows(tries, "probability", "descend");
 
-    idx                 = height(tries);
+    idx                 = 0;
     
     % second check - number of holes
     NUM_HOLES_IN_NUMBERS = [0, 0, 0, 0, 0, 1, 0, 2, 1, 1];
@@ -37,12 +37,18 @@ function [number, probability] = StreetSignNumber(bw_image)
     [~, numHoles] = bwlabel(hole_image);
 
     % result
-    for i_tries = height(tries):-1:1
-        i = tries(idx, :).id;
+    for i_tries = 1:height(tries)
+        i = tries(i_tries, :).id;
         if NUM_HOLES_IN_NUMBERS(i) == numHoles
+            idx = i_tries;
             break
         end
-        idx = idx - 1;
+    end
+
+    if idx == 0
+        number = 0;
+        probability = 0;
+        return;
     end
     
     number = tries(idx, :).id;

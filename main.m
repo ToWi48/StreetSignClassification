@@ -8,42 +8,45 @@ disp("---------- Start Image Validation ----------")
 disp("--------------------------------------------")
 
 TrainingPictures = TrainingPictureUtils.getPictures("TrainingPictures");
+%TrainingPictures = TrainingPictureUtils.getPictures("TestPictures");
 
-matches = [];
-errors = 0;
+vb = ValidationBench();
+
+figure;
 
 for i = 1:length(TrainingPictures)
     scene = TrainingPictures(i);
     scene = scene.load();
 
+    number = 0;
+    probability = 0;
+
     % Processing
-    masked_image            = StreetSignMask(scene.image);
+    [masked_image, info]    = StreetSignMask(scene.image);
+    if (info ~= "")
+        vb = vb.publishNoDetection(scene, info);
+        continue
+    end
+
     masked_image            = StreetSignScaling(masked_image);
+    
     digits                  = StreetSignToDigits(masked_image);
+    if isempty(digits)
+        vb = vb.publishNoDetection(scene, "can´t find any digits!");
+        continue
+    end
+
     [number, probability]   = StreetSignDigitsToNumber(digits);
     [final_number, info]    = StreetSignNumberValidation(number, probability);
-
+    
     if final_number == 0
-        errors = errors + 1;
-        disp(strjoin(["Error:" info "probability:" probability "(detect:" number "orig:" scene.velocity ")" "(" scene.path ")"]));
-    else
-
-        match = (final_number == str2num(scene.velocity));
-    
-        disp(strjoin(["Detection:" match "probability:" probability "(detect:" final_number "orig:" scene.velocity ")" "(" scene.path ")"]));
-    
-        matches(i) = match * 100;
-        
-        % figure
-        % subplot(1,2,1); imshow(masked_image); title([num2str(number) " km/h"]);
-        % pause(2);
-        % close all
+        vb = vb.publishNoDetection(scene, info);
+        continue
     end
+
+    vb = vb.publishDetection(scene, final_number, probability);
 
     scene = scene.unload();
 end
 
-disp("--------------------------------------------");
-disp(strjoin(["Final detection rate: " mean(matches) "%"]));
-disp(strjoin(["Final error rate: " errors / length(TrainingPictures) .* 100 "%"]));
-disp("--------------------------------------------");
+vb.printResult();
