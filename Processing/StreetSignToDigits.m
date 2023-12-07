@@ -12,6 +12,7 @@ function digit_images_filtered = StreetSignToDigits(image)
     center_x                    = uint16(1/2 * image_hsv_bin_size(1));
     center_y                    = uint16(1/2 * image_hsv_bin_size(2));
     
+    %ToDo create number mask
     number_image = image_hsv_bin(center_x-half_default_width:center_x+half_default_width, center_y-half_default_height:center_y+half_default_height, :);
     
     % extract single number
@@ -25,7 +26,7 @@ function digit_images_filtered = StreetSignToDigits(image)
         digit_images_filtered = digit_images_filtered(1:3);
     end
 
-    subplot(2, 4, 5); imshow(image);
+    subplot(2, 4, 5); imshow(number_image);
     subplot(2, 4, 6); imshow(zeros(2,2));
     subplot(2, 4, 7); imshow(zeros(2,2));
     subplot(2, 4, 8); imshow(zeros(2,2));

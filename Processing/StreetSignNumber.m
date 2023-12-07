@@ -33,8 +33,8 @@ function [number, probability] = StreetSignNumber(bw_image)
     % second check - number of holes
     NUM_HOLES_IN_NUMBERS = [0, 0, 0, 0, 0, 1, 0, 2, 1, 1];
 
-    hole_image = imclearborder(not(bw_image));
-    [~, numHoles] = bwlabel(hole_image);
+    euler_num = regionprops(bw_image, "Eulernumber");
+    numHoles = 1 - euler_num.EulerNumber;
 
     % result
     for i_tries = 1:height(tries)

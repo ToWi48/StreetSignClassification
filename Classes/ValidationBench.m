@@ -12,10 +12,11 @@ classdef ValidationBench
             obj.errors = 0;
         end
         
-        function obj = publishNoDetection(obj, scene, info)
+        function obj = publishNoDetection(obj, scene, info, number)
             if scene.isValid
                 obj.errors = obj.errors + 1;
-                disp(strjoin(["Error:" info "(" scene.path ")"]));
+                disp(strjoin(["Error:" info "(detect:" number "orig:" scene.velocity ")" "(" scene.path ")"]));
+                %assert(false);
             else
                 disp(strjoin(["Detection: invalid picture!" "(" scene.path ")"]));
                 obj.matches = obj.matches + 1;
@@ -29,8 +30,8 @@ classdef ValidationBench
                 disp(strjoin(["Detection:" match "probability:" probability "(detect:" number "orig:" scene.velocity ")" "(" scene.path ")"]));
                 obj.matches = obj.matches + 1;
             else
-                disp(strjoin(["Error:" info "probability:" probability "(detect:" number "orig:" scene.velocity ")" "(" scene.path ")"]));
-                obj.errors = obj.errors + 1;
+                warning(strjoin(["Missdetection: probability:" probability "(detect:" number "orig:" scene.velocity ")" "(" scene.path ")"]));
+                obj.missdetections = obj.missdetections + 1;
             end
         end
 

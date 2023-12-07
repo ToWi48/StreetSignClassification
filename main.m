@@ -7,8 +7,9 @@ disp("--------------------------------------------")
 disp("---------- Start Image Validation ----------")
 disp("--------------------------------------------")
 
-TrainingPictures = TrainingPictureUtils.getPictures("TrainingPictures");
+%TrainingPictures = TrainingPictureUtils.getPictures("TrainingPictures");
 %TrainingPictures = TrainingPictureUtils.getPictures("TestPictures");
+TrainingPictures = TrainingPictureUtils.getPictures("TestPicturesSelected");
 
 vb = ValidationBench();
 
@@ -24,7 +25,7 @@ for i = 1:length(TrainingPictures)
     % Processing
     [masked_image, info]    = StreetSignMask(scene.image);
     if (info ~= "")
-        vb = vb.publishNoDetection(scene, info);
+        vb = vb.publishNoDetection(scene, info, 0);
         continue
     end
 
@@ -32,7 +33,7 @@ for i = 1:length(TrainingPictures)
     
     digits                  = StreetSignToDigits(masked_image);
     if isempty(digits)
-        vb = vb.publishNoDetection(scene, "can´t find any digits!");
+        vb = vb.publishNoDetection(scene, "can´t find any digits!", 0);
         continue
     end
 
@@ -40,7 +41,7 @@ for i = 1:length(TrainingPictures)
     [final_number, info]    = StreetSignNumberValidation(number, probability);
     
     if final_number == 0
-        vb = vb.publishNoDetection(scene, info);
+        vb = vb.publishNoDetection(scene, info, number);
         continue
     end
 
