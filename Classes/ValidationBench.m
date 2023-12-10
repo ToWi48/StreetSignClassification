@@ -24,7 +24,7 @@ classdef ValidationBench
         end
         
         function obj = publishDetection(obj, scene, number, probability)
-            match = (number == str2num(scene.velocity));
+            match = (number == scene.velocity);
         
             if match
                 disp(strjoin(["Detection:" match "probability:" probability "(detect:" number "orig:" scene.velocity ")" "(" scene.path ")"]));

@@ -16,7 +16,7 @@ classdef TrainingScene
             
             td.path         = path;
             td.image        = NaN;
-            td.velocity     = strrep(extractedName{2}, "kmh", "");
+            td.velocity     = str2double(strrep(extractedName{2}, "kmh", ""));
             td.shape        = extractedName{3};
             td.background   = extractedName{4};
             td.weather      = extractedName{5};

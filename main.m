@@ -11,10 +11,12 @@ disp("--------------------------------------------")
 %TrainingPictures = TrainingPictureUtils.getPictures("TestPictures");
 TrainingPictures = TrainingPictureUtils.getPictures("TestPicturesSelected");
 
+% Start Testbench
 vb = ValidationBench();
 
 figure;
 
+% foreach RoadSituation
 for i = 1:length(TrainingPictures)
     scene = TrainingPictures(i);
     scene = scene.load();
@@ -23,29 +25,36 @@ for i = 1:length(TrainingPictures)
     probability = 0;
 
     % Processing
-    [masked_image, info]    = StreetSignMask(scene.image);
-    if (info ~= "")
-        vb = vb.publishNoDetection(scene, info, 0);
-        continue
-    end
-
-    masked_image            = StreetSignScaling(masked_image);
+    for i_tries = 1:3
+        [masked_image, info]    = StreetSignMask(scene.image, i_tries);
+        if (info ~= "")
+            vb = vb.publishNoDetection(scene, info, 0);
+            continue
+        end
     
-    digits                  = StreetSignToDigits(masked_image);
-    if isempty(digits)
-        vb = vb.publishNoDetection(scene, "can´t find any digits!", 0);
-        continue
-    end
-
-    [number, probability]   = StreetSignDigitsToNumber(digits);
-    [final_number, info]    = StreetSignNumberValidation(number, probability);
+        masked_image            = StreetSignScaling(masked_image);
+        
+        [digits, info]          = StreetSignToDigits(masked_image);
+        if isempty(digits)
+            vb = vb.publishNoDetection(scene, "can´t find any digits!", 0);
+            continue
+        end
     
-    if final_number == 0
-        vb = vb.publishNoDetection(scene, info, number);
-        continue
-    end
+        [number, probability]   = StreetSignDigitsToNumber(digits);
+        [final_number, info]    = StreetSignNumberValidation(number, probability);
+        
+        if final_number == 0
+            vb = vb.publishNoDetection(scene, info, number);
+            continue
+        end
+    
+        vb = vb.publishDetection(scene, final_number, probability);
 
-    vb = vb.publishDetection(scene, final_number, probability);
+        if final_number == scene.velocity
+            disp(strjoin(["found right image in trie" i_tries]));
+        end
+        break
+    end
 
     scene = scene.unload();
 end
