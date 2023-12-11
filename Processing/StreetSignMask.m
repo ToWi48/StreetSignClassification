@@ -36,16 +36,15 @@ function [boxed_image, info] = StreetSignMask(image, i_match)
     filled = objects_filledArea(:,:).FilledArea ./ max(objects_filledArea(:,:).FilledArea);
     circ = 1 - objects_circularity(:,:).diff_circularity;
 
-    %objects_diff = (0.5 .* filled) + (circ);
-    objects_diff = table((1:height(objects_circularity))', (0.5 .* filled) + (circ), 'VariableNames', {'id', 'objects_diff'});
-    objects_diff = sortrows(objects_diff, "objects_diff", "descend");
-    %[~, object_of_choice_id] = max(objects_diff);
+    %object_prop = (0.5 .* filled) + (circ);
+    object_prop = table((1:height(objects_circularity))', (0.5 .* filled) + (circ), 'VariableNames', {'id', 'object_prop'});
+    object_prop = sortrows(object_prop, "object_prop", "descend");
+    % [~, object_of_choice_id] = max(object_prop);
 
-    if i_match > height(objects_diff.id)
-        warning("id not in range")
-        object_of_choice_id = height(objects_diff.id);
+    if i_match > height(object_prop.id)
+        object_of_choice_id = height(object_prop.id);
     else
-        object_of_choice_id = objects_diff.id(i_match);
+        object_of_choice_id = object_prop.id(i_match);
     end
     
     % cut out object of choice
@@ -58,11 +57,12 @@ function [boxed_image, info] = StreetSignMask(image, i_match)
     image_red_bin_1 = image_red_bin(tmp_y:tmp_y+tmp_height, tmp_x:tmp_x+tmp_width, :);
     
     boxed_image = imcomplement(boxed_image);
+    subplot(2, 4, 3); imshow(boxed_image);
     boxed_image = boxed_image .* uint8(xor(mask, image_red_bin_1));
 
-    subplot(2, 4, 1); imshow(image);
-    subplot(2, 4, 2); imshow(image_red_bin);
-    subplot(2, 4, 3); imshow(image_red_filled);
+    subplot(2, 4, 1); imshow(image_red_bin);
+    subplot(2, 4, 2); imshow(image_red_filled);
+    
     subplot(2, 4, 4); imshow(boxed_image);
     pause(0)
 end

@@ -3,7 +3,8 @@ function [digits, info] = StreetSignToDigits(number_image)
 
     image_hsv_h = rgb2hsv(number_image);
     image_hsv = image_hsv_h(:,:,3);
-    number_image_bin = image_hsv > (3/4 * max(image_hsv, [], "all")); 
+    number_image_bin = image_hsv > (3/5 * max(image_hsv, [], "all")); 
+    number_image_bin = bwareaopen(number_image_bin, 10);
 
     %% take care to have black borders on x-axis
     number_image_bin(:, width(number_image_bin) + 1, :) = 0;
