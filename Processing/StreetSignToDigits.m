@@ -1,15 +1,22 @@
-function [digits, info] = StreetSignToDigits(number_image)
+function [digits, info] = StreetSignToDigits(number_image, figure)
+    %% prepare
     info = "";
 
+    n_plots = 4;
+    for i_plot = 1:n_plots
+        plots(i_plot) = subplot(1, n_plots, i_plot, 'Parent', figure);
+    end
+
+    %% processing
     image_hsv_h = rgb2hsv(number_image);
     image_hsv = image_hsv_h(:,:,3);
     number_image_bin = image_hsv > (3/5 * max(image_hsv, [], "all")); 
     number_image_bin = bwareaopen(number_image_bin, 10);
 
-    %% take care to have black borders on x-axis
+    % take care to have black borders on x-axis
     number_image_bin(:, width(number_image_bin) + 1, :) = 0;
 
-    %% cut out borders & reduce empty space
+    % cut out borders & reduce empty space
     number_image_bin_sum_x = sum(number_image_bin, 1);
 
     % left
@@ -22,7 +29,7 @@ function [digits, info] = StreetSignToDigits(number_image)
 
     number_image_bin_cutted = number_image_bin(:, idx');
 
-    %% get digit regions
+    % get digit regions
     digit_borders = find(sum(number_image_bin_cutted, 1) == 0);
     
     digits = [];
@@ -40,11 +47,12 @@ function [digits, info] = StreetSignToDigits(number_image)
         i_digit = i_digit + 1;
     end
 
-    %% plot
-    subplot(2, 4, 5); imshow(number_image_bin_cutted);
-    subplot(2, 4, 6); imshow(zeros(2,2));
-    subplot(2, 4, 7); imshow(zeros(2,2));
-    subplot(2, 4, 8); imshow(zeros(2,2));
+    %% plot and return
+    imshow(number_image_bin_cutted, 'Parent', plots(1));    title("Resized", 'Parent', plots(1));
+
+    for i_plot = 2:n_plots
+        imshow(zeros(2,2), 'Parent', plots(i_plot));        title("no digit", 'Parent', plots(i_plot));
+    end
 
     if isempty(digits) || (length(digits) > 3)
         info = "digit count not match any pattern!";
@@ -52,7 +60,7 @@ function [digits, info] = StreetSignToDigits(number_image)
     end
 
     for i_plot = 1:length(digits)
-        subplot(2, 4, 4+i_plot+1); imshow(digits{i_plot});
+        imshow(digits{i_plot}, 'Parent', plots(i_plot+1));  title(i_plot + ". Digit", 'Parent', plots(i_plot+1));
     end
     pause(0);
 end

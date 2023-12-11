@@ -1,6 +1,13 @@
-function [boxed_image, info] = StreetSignMask(image, i_match)
+function [boxed_image, info] = StreetSignMask(image, i_match, figure)
+    %% prepare
     info = "";
+    
+    n_plots = 4;
+    for i_plot = 1:n_plots
+        plots(i_plot) = subplot(1, n_plots, i_plot, 'Parent', figure);
+    end
 
+    %% processing
     % binarize and fill all objects
     [image_red_bin, ~] = createMask(image);
     image_red_filled = imfill(image_red_bin, 'holes');
@@ -31,7 +38,6 @@ function [boxed_image, info] = StreetSignMask(image, i_match)
     % get most round object
     diff_circularity = abs(objects_filledArea(:, :).Circularity - 1);
     objects_circularity = table((1:height(objects_filledArea))', objects_filledArea(:, :).Circularity, diff_circularity, 'VariableNames', {'id', 'circularity', 'diff_circularity'});
-    %objects_circularity = sortrows(objects_circularity, "diff_circularity");
 
     filled = objects_filledArea(:,:).FilledArea ./ max(objects_filledArea(:,:).FilledArea);
     circ = 1 - objects_circularity(:,:).diff_circularity;
@@ -39,7 +45,6 @@ function [boxed_image, info] = StreetSignMask(image, i_match)
     %object_prop = (0.5 .* filled) + (circ);
     object_prop = table((1:height(objects_circularity))', (0.5 .* filled) + (circ), 'VariableNames', {'id', 'object_prop'});
     object_prop = sortrows(object_prop, "object_prop", "descend");
-    % [~, object_of_choice_id] = max(object_prop);
 
     if i_match > height(object_prop.id)
         object_of_choice_id = height(object_prop.id);
@@ -57,12 +62,12 @@ function [boxed_image, info] = StreetSignMask(image, i_match)
     image_red_bin_1 = image_red_bin(tmp_y:tmp_y+tmp_height, tmp_x:tmp_x+tmp_width, :);
     
     boxed_image = imcomplement(boxed_image);
-    subplot(2, 4, 3); imshow(boxed_image);
     boxed_image = boxed_image .* uint8(xor(mask, image_red_bin_1));
 
-    subplot(2, 4, 1); imshow(image_red_bin);
-    subplot(2, 4, 2); imshow(image_red_filled);
-    
-    subplot(2, 4, 4); imshow(boxed_image);
+    %% plot and return
+    imshow(image, 'Parent', plots(1));              title("Original", 'Parent', plots(1));
+    imshow(image_red_bin, 'Parent', plots(2));      title("Binarized", 'Parent', plots(2));
+    imshow(image_red_filled, 'Parent', plots(3));   title("Filled", 'Parent', plots(3));
+    imshow(boxed_image, 'Parent', plots(4));        title("Result", 'Parent', plots(4));
     pause(0)
 end
