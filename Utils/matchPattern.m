@@ -1,4 +1,4 @@
-function probability = matchPattern(orig_image, ref_image, figure_orig, figure)
+function probability = matchPattern(orig_image, ref_image)
     % synch size
     ref_image = imresize(ref_image, size(orig_image));
 
@@ -13,8 +13,9 @@ function probability = matchPattern(orig_image, ref_image, figure_orig, figure)
     x_axis_ref_norm     = x_axis_ref / max(x_axis_ref);
     y_axis_ref_norm     = y_axis_ref / max(y_axis_ref);
     
-    %barh(1:length(y_axis_orig_norm), y_axis_orig_norm, 'Parent', figure_orig); set(gca, 'YDir','reverse');
+%    barh(1:length(y_axis_orig_norm), y_axis_orig_norm, 'Parent', figure_orig); set(gca, 'YDir','reverse');
     %barh(1:length(y_axis_ref_norm), y_axis_ref_norm, 'Parent', figure); set(gca, 'YDir','reverse');
+    %plot(y_axis_ref_norm(end:-1:1), 1:-1/length(y_axis_ref_norm):1/length(y_axis_ref_norm)); set(gca, 'YDir','reverse', 'Parent', figure);
 
     % plot
     % figure

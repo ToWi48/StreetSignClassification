@@ -1,10 +1,10 @@
-function [boxed_image, info] = StreetSignMask(image, i_match, figure)
+function [boxed_image, info] = StreetSignMask(image, i_match, figure_obj)
     %% prepare
     info = "";
     
     n_plots = 4;
     for i_plot = 1:n_plots
-        plots(i_plot) = subplot(1, n_plots, i_plot, 'Parent', figure);
+        plots(i_plot) = subplot(1, n_plots, i_plot, 'Parent', figure_obj);
     end
 
     %% processing

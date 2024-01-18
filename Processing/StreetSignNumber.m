@@ -1,10 +1,7 @@
-function [number, probability] = StreetSignNumber(bw_image, figure)
+function [number, probability] = StreetSignNumber(bw_image, figure_obj)
     %% prepare
-    n_plots_x = 11;
-    n_plots_y = 2;
-    for i_plot = 1:2*n_plots_x
-        plots(i_plot) = subplot(n_plots_y, n_plots_x, i_plot, 'Parent', figure);
-    end
+    number = 0;
+    probability = 0;
 
     %% Number reference LUTs
     load("Templates\TEMPLATE_0.mat");
@@ -25,16 +22,16 @@ function [number, probability] = StreetSignNumber(bw_image, figure)
 
     % first check - envelope curve
     probabilitys        = [];
-    probabilitys(1)     = matchPattern(bw_image, TEMPLATE_1, plots(2), plots(12));
-    probabilitys(2)     = matchPattern(bw_image, TEMPLATE_2, plots(3), plots(13));
-    probabilitys(3)     = matchPattern(bw_image, TEMPLATE_3, plots(4), plots(14));
-    probabilitys(4)     = matchPattern(bw_image, TEMPLATE_4, plots(5), plots(15));
-    probabilitys(5)     = matchPattern(bw_image, TEMPLATE_5, plots(6), plots(16));
-    probabilitys(6)     = matchPattern(bw_image, TEMPLATE_6, plots(7), plots(17));
-    probabilitys(7)     = matchPattern(bw_image, TEMPLATE_7, plots(8), plots(18));
-    probabilitys(8)     = matchPattern(bw_image, TEMPLATE_8, plots(9), plots(19));
-    probabilitys(9)     = matchPattern(bw_image, TEMPLATE_9, plots(10), plots(20));
-    probabilitys(10)    = matchPattern(bw_image, TEMPLATE_0, plots(1), plots(11));
+    probabilitys(1)     = matchPattern(bw_image, TEMPLATE_1);
+    probabilitys(2)     = matchPattern(bw_image, TEMPLATE_2);
+    probabilitys(3)     = matchPattern(bw_image, TEMPLATE_3);
+    probabilitys(4)     = matchPattern(bw_image, TEMPLATE_4);
+    probabilitys(5)     = matchPattern(bw_image, TEMPLATE_5);
+    probabilitys(6)     = matchPattern(bw_image, TEMPLATE_6);
+    probabilitys(7)     = matchPattern(bw_image, TEMPLATE_7);
+    probabilitys(8)     = matchPattern(bw_image, TEMPLATE_8);
+    probabilitys(9)     = matchPattern(bw_image, TEMPLATE_9);
+    probabilitys(10)    = matchPattern(bw_image, TEMPLATE_0);
 
     tries               = table((1:length(probabilitys))', probabilitys', 'VariableNames', {'id', 'probability'});
     tries               = sortrows(tries, "probability", "descend");
@@ -57,11 +54,16 @@ function [number, probability] = StreetSignNumber(bw_image, figure)
     end
 
     if idx == 0
-        number = 0;
-        probability = 0;
         return;
     end
     
+    % return plot and values
+    order = {'1'; '2'; '3'; '4'; '5'; '6'; '7'; '8'; '9'; '0'};
+
+    bar(order, probabilitys .* 100, 'Parent', figure_obj);
+    xlabel("Number", 'Parent', figure_obj);
+    ylabel("Probability [%]", 'Parent', figure_obj);
+
     number = tries(idx, :).id;
     probability = probabilitys(number);
 

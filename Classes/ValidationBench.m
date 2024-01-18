@@ -27,7 +27,7 @@ classdef ValidationBench
             match = (number == scene.velocity);
         
             if match
-                disp(strjoin(["Detection:" match "probability:" probability "(detect:" number "orig:" scene.velocity ")" "(" scene.path ")"]));
+                disp(strjoin(["Successfull Detection: probability:" probability "(detect:" number "orig:" scene.velocity ")" "(" scene.path ")"]));
                 obj.matches = obj.matches + 1;
             else
                 warning(strjoin(["Missdetection: probability:" probability "(detect:" number "orig:" scene.velocity ")" "(" scene.path ")"]));
