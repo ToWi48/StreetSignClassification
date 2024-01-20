@@ -38,7 +38,7 @@ function Run(app, TrainingPictures)
             
             if final_number == 0
                 app.CurrentTrieValueLabel.FontColor = [1, 0, 0];
-                vb = vb.publishNoDetection(scene, info, number);
+                vb = vb.publishNoDetection(scene, number, info);
                 continue
             end
             

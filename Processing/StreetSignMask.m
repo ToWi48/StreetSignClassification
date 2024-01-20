@@ -69,5 +69,8 @@ function [boxed_image, info] = StreetSignMask(image, i_match, figure_obj)
     imshow(image_red_bin, 'Parent', plots(2));      title("Binarized", 'Parent', plots(2));
     imshow(image_red_filled, 'Parent', plots(3));   title("Filled", 'Parent', plots(3));
     imshow(boxed_image, 'Parent', plots(4));        title("Result", 'Parent', plots(4));
-    pause(0)
+    imwrite(image,"BELEG/ProcessingOrig.png")
+    imwrite(image_red_bin,"BELEG/ProcessingMaskRed.png")
+    imwrite(image_red_filled,"BELEG/ProcessingMaskRedFilled.png")
+    imwrite(boxed_image,"BELEG/ProcessingMaskFinal.png")
 end

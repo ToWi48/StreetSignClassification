@@ -12,7 +12,7 @@ classdef ValidationBench
             obj.errors = 0;
         end
         
-        function obj = publishNoDetection(obj, scene, info, number)
+        function obj = publishNoDetection(obj, scene, number, info)
             if scene.isValid
                 obj.errors = obj.errors + 1;
                 disp(strjoin(["Error:" info "(detect:" number "orig:" scene.velocity ")" "(" scene.path ")"]));

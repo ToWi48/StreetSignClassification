@@ -13,6 +13,9 @@ function [digits, info] = StreetSignToDigits(number_image, figure_obj)
     number_image_bin = image_hsv > (3/5 * max(image_hsv, [], "all")); 
     number_image_bin = bwareaopen(number_image_bin, 10);
 
+    imwrite(image_hsv,"BELEG/ProcessingToDigitsHSV.png")
+    imwrite(number_image_bin,"BELEG/ProcessingToDigitsHSVBin.png")
+
     % take care to have black borders on x-axis
     number_image_bin(:, width(number_image_bin) + 1, :) = 0;
 
@@ -28,6 +31,7 @@ function [digits, info] = StreetSignToDigits(number_image, figure_obj)
     end
 
     number_image_bin_cutted = number_image_bin(:, idx');
+    imwrite(number_image_bin_cutted,"BELEG/ProcessingToDigitsHSVBinSpaced.png")
 
     % get digit regions
     digit_borders = find(sum(number_image_bin_cutted, 1) == 0);
@@ -49,6 +53,7 @@ function [digits, info] = StreetSignToDigits(number_image, figure_obj)
 
     %% plot and return
     imshow(number_image_bin_cutted, 'Parent', plots(1));    title("Resized", 'Parent', plots(1));
+    imwrite(number_image_bin_cutted,"BELEG/ProcessingDigitsCutted.png")
 
     for i_plot = 2:n_plots
         imshow(zeros(2,2), 'Parent', plots(i_plot));        title("no digit", 'Parent', plots(i_plot));
@@ -61,6 +66,7 @@ function [digits, info] = StreetSignToDigits(number_image, figure_obj)
 
     for i_plot = 1:length(digits)
         imshow(digits{i_plot}, 'Parent', plots(i_plot+1));  title(i_plot + ". Digit", 'Parent', plots(i_plot+1));
+        imwrite(digits{i_plot},"BELEG/ProcessingDigitsCutted" + i_plot + ".png")
     end
     pause(0);
 end

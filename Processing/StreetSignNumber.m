@@ -64,6 +64,11 @@ function [number, probability] = StreetSignNumber(bw_image, figure_obj)
     xlabel("Number", 'Parent', figure_obj);
     ylabel("Probability [%]", 'Parent', figure_obj);
 
+    % figure
+    % bar(order, probabilitys .* 100);
+    % xlabel("Number");
+    % ylabel("Probability [%]");
+
     number = tries(idx, :).id;
     probability = probabilitys(number);
 
