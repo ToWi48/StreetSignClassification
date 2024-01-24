@@ -11,7 +11,10 @@ function [digits, info] = StreetSignToDigits(number_image, figure_obj)
     image_hsv_h = rgb2hsv(number_image);
     image_hsv = image_hsv_h(:,:,3);
     number_image_bin = image_hsv > (3/5 * max(image_hsv, [], "all")); 
-    number_image_bin = bwareaopen(number_image_bin, 10);
+    number_image_bin = bwareaopen(number_image_bin, 10, 4);
+
+    % remove holes in object
+    number_image_bin = not(bwareaopen(not(number_image_bin), 4, 4));
 
     imwrite(image_hsv,"BELEG/ProcessingToDigitsHSV.png")
     imwrite(number_image_bin,"BELEG/ProcessingToDigitsHSVBin.png")

@@ -58,6 +58,21 @@ function [boxed_image, info] = StreetSignMask(image, i_match, figure_obj)
     tmp_y       = floor(objects_filledArea(object_of_choice_id, :).BoundingBox(2));
     tmp_width   = width(mask) - 1;
     tmp_height  = height(mask) - 1;
+
+    if tmp_width < 1 || tmp_height < 1
+        info = "Object too small!";
+        boxed_image = image;
+        return
+    end
+
+    if tmp_x < 1
+        tmp_x = 1;
+    end
+
+    if tmp_y < 1
+        tmp_y = 1;
+    end
+
     boxed_image = image(tmp_y:tmp_y+tmp_height, tmp_x:tmp_x+tmp_width, :);
     image_red_bin_1 = image_red_bin(tmp_y:tmp_y+tmp_height, tmp_x:tmp_x+tmp_width, :);
     

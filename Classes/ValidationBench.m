@@ -15,7 +15,7 @@ classdef ValidationBench
         function obj = publishNoDetection(obj, scene, number, info)
             if scene.isValid
                 obj.errors = obj.errors + 1;
-                disp(strjoin(["Error:" info "(detect:" number "orig:" scene.velocity ")" "(" scene.path ")"]));
+                disp(strjoin(["No Detection:" info "(detect:(" number ") orig:" scene.velocity ")" "(" scene.path ")"]));
                 %assert(false);
             else
                 disp(strjoin(["Detection: invalid picture!" "(" scene.path ")"]));
@@ -40,7 +40,7 @@ classdef ValidationBench
             disp("--------------------------------------------");
             disp(strjoin(["Final detection rate: " obj.matches / NUM_OF_TRIES * 100 "%"]));
             disp(strjoin(["Final missdetection rate: " obj.missdetections / NUM_OF_TRIES * 100 "%"]));
-            disp(strjoin(["Final error rate: " obj.errors / NUM_OF_TRIES * 100 "%"]));
+            disp(strjoin(["Final no detection rate: " obj.errors / NUM_OF_TRIES * 100 "%"]));
             disp("--------------------------------------------");
         end
     end
